@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6a522c0d-9c5a-42c4-90ae-9473f0719e7b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="readfile" doc:name="File Config" doc:id="03e2449c-57a6-4325-a3b6-148d215d3923" >
+		<file:connection workingDir="C:\Users\viswanathr\Documents\readfile" />
+	</file:config>
+	<file:config name="writefile" doc:name="File Config" doc:id="469db2a0-3420-4eed-a5f9-694470cc525c" >
+		<file:connection workingDir="C:\Users\viswanathr\Documents\writefile" />
+	</file:config>
+	<file:config name="writenewfile" doc:name="File Config" doc:id="1c8ed30b-d88d-4aca-a39f-3fc5a58d3ac0" >
+		<file:connection workingDir="C:\Users\viswanathr\Documents\writenewfile" />
+	</file:config>
+	<flow name="read-operationFlow" doc:id="893b3f68-7414-4d54-9856-bbfba6534278" >
+		<http:listener doc:name="Listener" doc:id="2de1be5e-a812-4a40-a506-1dae7cdfaeb6" config-ref="HTTP_Listener_config" path="/readoperation"/>
+		<set-variable value="#[uuid()]" doc:name="Correlationid" doc:id="ddf2aee7-fbaf-46fb-921c-3b4fb74fbed7" variableName="Correlationid"/>
+		<file:read doc:name="Read" doc:id="94d44d2f-757a-4693-86b7-4b9940b7ce29" config-ref="readfile" path="fileread.txt.txt" target="read">
+			<repeatable-in-memory-stream />
+		</file:read>
+		<choice doc:name="Choice" doc:id="ba6c41f3-1ac1-4071-98a6-41ba7eebff71" >
+			<when expression="#[isEmpty(payload)]">
+				<file:write doc:name="Write new folder" doc:id="61eb2e5d-60fa-4c77-8891-09335a6bd955" config-ref="writenewfile" path="writefile2.txt" mode="APPEND">
+					<file:content ><![CDATA[#["\nhellow viswanath"]]]></file:content>
+				</file:write>
+				<logger level="INFO" doc:name=" Logger" doc:id="141e4702-1418-4ca4-bbec-d4d1e17021b9" message="Correlationid- #[vars.Correlationid] --  write logger component" />
+				<set-payload value="write operation successfully" doc:name="success message" doc:id="ea33eb57-b173-4f4c-9763-ab9dee4b22a3" />
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="a694d33e-bcb2-4be0-951f-106694abb204">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Name:"viswa",
+	Fileoutput:vars.read ++ "appending new lines"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="239ca112-904c-4910-ab58-0385916a2908" message="#[payload]" />
+				<file:write doc:name="Write new folder" doc:id="e42b94d3-6827-4061-af5c-e8da20e5bb3a" config-ref="writefile" path="writefile1.txt" mode="APPEND">
+				</file:write>
+				<set-payload value="file has been written successfully" doc:name="write Set Payload" doc:id="7f354037-e364-4eb2-b177-9432eae2a626" />
+				<logger level="INFO" doc:name="write Logger" doc:id="1ba61747-4090-403f-b99e-6e247a28fdfc" message="file has been written" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
