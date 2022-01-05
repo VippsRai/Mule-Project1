@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="31281d70-265b-41da-a6c3-2f756d07f0d4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="9c9a8223-74ab-4c70-9b37-8da410da20bf" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="assessment1" />
+	</db:config>
+	<flow name="assessmentsqlFlow" doc:id="785d0939-0404-46ea-8e4e-dfba5063b5b6" >
+		<http:listener doc:name="Listener" doc:id="fadec0ce-6115-4f12-a034-27eaff718c64" config-ref="HTTP_Listener_config" path="/insert"/>
+		<db:insert doc:id="a3803518-4f24-484b-abed-023b2efd108e" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO assessment1.customer_details (customerid, name, DOB, gender, city)
+values (13, "viswa1", "01-12-2022", "male","hyderabad")]]></db:sql>
+		</db:insert>
+	</flow>
+</mule>
