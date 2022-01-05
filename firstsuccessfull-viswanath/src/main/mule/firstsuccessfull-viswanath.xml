@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="823fb136-7d3a-4b58-9bc2-6a343a45d46f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="firstsuccessfull-viswanathFlow" doc:id="73580edb-58cb-4e34-b2c3-d8b307bebcfe" >
+		<http:listener doc:name="Listener" doc:id="a3fbae3b-e7ff-4e2d-b94c-8589a6179b44" config-ref="HTTP_Listener_config" path="/firstsuccessfull"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d87f2248-aa37-46c3-9449-7ad74b944647" message="startlogger"/>
+		<ee:transform doc:name="Transform Message" doc:id="66037469-a009-4907-b3b9-6bec9d19f039" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	Message : "Welcome viswanath"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<first-successful doc:name="First Successful" doc:id="8f37dd5c-061d-46e4-9178-c49d25442218" >
+			<route >
+				<raise-error doc:name="Raise error" doc:id="17e8794a-7644-4a95-a493-19c64fc771e9" type="ANY" />
+				<logger level="INFO" doc:name="Logger" doc:id="f376100e-2abd-4715-bee1-29fe18a7fa01" message="route1"/>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="ff6b43c4-b021-477e-a6c5-19a5f3f359ee" message="route2"/>
+			</route>
+		</first-successful>
+		<logger level="INFO" doc:name="Logger" doc:id="1432110a-9fa1-40da-bada-a87d69d76643" message="endlogger" />
+	</flow>
+</mule>
