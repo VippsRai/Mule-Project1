@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="964b91f1-7e3f-4b3b-91d5-fd8f06921a8e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="6cef156c-41b2-4b7e-8539-c7410cc5348b" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="assessment1" />
+	</db:config>
+	<flow name="delete-sqlFlow" doc:id="f489accd-c7ea-4882-a773-b008d324a45e" >
+		<http:listener doc:name="Listener" doc:id="057eaab2-6091-4ce1-b6eb-89c7ebf73610" config-ref="HTTP_Listener_config" path="/delete"/>
+		<db:delete doc:name="Delete" doc:id="fde8ed1f-82a5-4d81-a93b-361ea5c74e5d" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE FROM assessment1.customer_details WHERE customerid = 13]]></db:sql>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="e599731f-9c97-41fc-95bf-3d488b14189c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
