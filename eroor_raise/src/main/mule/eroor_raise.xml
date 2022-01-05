@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="59487ecf-5203-4595-8cb4-669d7c06ed7a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="eroor_raiseFlow" doc:id="7cf85fb1-3954-4c51-b1c8-2b3a85ac4a5f" >
+		<http:listener doc:name="Listener" doc:id="59c280d2-47c1-4559-a48b-36d686441cbe" config-ref="HTTP_Listener_config" path="/raise"/>
+		<choice doc:name="Choice" doc:id="cda64bf2-f31e-48ef-940b-4312e624acd3" >
+			<when expression="#[isEmpty(payload)]">
+				<raise-error doc:name="Raise error" doc:id="02e60c43-f254-4c5c-a7fc-2371263f862a" type="NO:PAYLOAD" description="NO PAYLOAD WAS RECEIVED"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="46135821-52a7-49dd-9f56-1dd8cdc0c80f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Response":"payload was received"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c863b7f5-90e7-4a6d-a6aa-3d396ba67816" type="NO:PAYLOAD">
+				<ee:transform doc:name="Transform Message" doc:id="c736cd5c-8b66-4671-89bf-5dccde0f1da4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	"none of payload was transfer for error handling"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="eroor_raiseFlow1" doc:id="b66139bc-546b-482d-a436-f995877aed55" >
+		<http:listener doc:name="Listener" doc:id="67a9d2f8-48a6-487b-96b5-47a7cb0c1c01" config-ref="HTTP_Listener_config" path="/isnumber"/>
+		<set-payload value="#[47699]" doc:name="Set Payload" doc:id="1da69c73-123c-4e88-ae6c-2f2a3f00b795" />
+		<validation:is-number numberType="INTEGER" doc:name="Is number" doc:id="b367fba7-4b10-4d19-8bf0-107107101666" value="#[payload]" minValue="1000" maxValue="10000"/>
+		<ee:transform doc:name="Transform Message" doc:id="6b3d517d-b4dc-4100-887b-f1946d8e52a4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="eroor_raiseFlow2" doc:id="8b5b0ed0-1899-44e1-9544-d0ca9f5addee" >
+		<http:listener doc:name="Listener" doc:id="2cb67ef6-54d0-4b59-b54a-656aab67f7f5" config-ref="HTTP_Listener_config" path="/raise2"/>
+		<choice doc:name="Choice" doc:id="3e937e71-8e24-4187-98f0-33b9679e3677" >
+			<when expression="#[isEmpty(payload)]">
+				<raise-error doc:name="Raise error" doc:id="a2203f05-75da-4558-8126-6b095b363c87" type="NO:PAYLOAD" description="no payload was received"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="fef1852f-734d-4648-8a8d-5364294bccc8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"hellow Viswanath"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a7dfa5bc-65a2-4693-8f2a-6ecadc1bbb1a" type="NO:PAYLOAD">
+				<ee:transform doc:name="Transform Message" doc:id="85af9de6-1d18-45dc-9061-6233fa23fe08" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"hellow viswa"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
