@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a497c6c6-9215-4a67-9d0c-4c89546a2aa5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="46a5c489-dda5-4a1b-85ae-b323f85b0750" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="jms-project2Flow" doc:id="d5f18158-d4be-40fe-ae51-07b7235749c8" >
+		<http:listener doc:name="Listener" doc:id="78948727-e2d2-404c-b2d5-5aa71b6f4f82" config-ref="HTTP_Listener_config" path="/jms"/>
+		<jms:consume doc:name="Consume" doc:id="ccccc7f0-ba79-4d39-b7fa-0a29e3df832b" config-ref="JMS_Config" destination="Queue.User.Consume"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c9594dc1-780d-445f-9cb3-f8868b33fafb" message="#[payload]"/>
+	</flow>
+</mule>
