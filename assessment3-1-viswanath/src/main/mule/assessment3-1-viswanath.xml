@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="426d24c3-f7b1-47cd-8e71-d3ee96adcb35" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment3-1-viswanathFlow" doc:id="ff58474e-b34a-45af-bfb0-577e06b94194" >
+		<http:listener doc:name="Listener" doc:id="19fa24f8-c1b2-40a1-a0d6-48b8c0daeb9f" config-ref="HTTP_Listener_config" path="/assessment3-1"/>
+		<set-variable value="#[uuid()]" doc:name="Correlationid" doc:id="0cf6017a-fc58-4c2d-8e0c-6a0f09f7c3d0" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="Correlationid" doc:id="64087177-4b22-4124-ba15-3631652c0ca8" message="#[vars.Correlationid]"/>
+		<set-variable value="#[attributes.queryParams.q1]" doc:name="Set Variable" doc:id="d446bd5d-0902-4008-a915-001063041e28" variableName="it is even"/>
+		<choice doc:name="Choice" doc:id="9d26bd5b-cf5e-4744-8743-c7f18c4fee35" >
+			<when expression="#[attributes.queryParams.payload]">
+				<ee:transform doc:name="Transform Message" doc:id="eef77de9-2cbb-425b-aeae-fedeba7082c0">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+		    "println": "Number is Even",
+		    "println": "Number is not Valid "
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-payload value="it is even" doc:name="Set Payload" doc:id="aaaa49f1-1fc0-4449-bb50-f0f80e07a3d9" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="329b6db7-5140-4d34-86b2-cf869e13e63b" message="#[payload]"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
