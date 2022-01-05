@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="23db6aa9-01ee-48e5-b866-a1f974c331ad" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="helloworld-viswanathFlow" doc:id="c90decf6-7eeb-40f6-9f78-fe50a2f9447b">
+		<http:listener doc:name="/helloworld" doc:id="054455ce-fadb-4364-ae11-6bb97b25891d" config-ref="HTTP_Listener_config" path="/uuid" />
+		<set-variable value="#[uuid()]" doc:name="Correlationid" doc:id="64f4eeeb-4034-4564-9321-48f3ad5c5912" variableName="Correlationid" />
+		<logger level="INFO" doc:name="CorrelationId" doc:id="7d9c1319-1dac-4672-843a-a2b5d4e6e498" message="CorrelationId- #[vars.CorrelationId]" />
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="fa629677-968f-4880-a01f-afa2ef0d3f45" variableName="originalpayload"/>
+		<ee:transform doc:name="Transform Message" doc:id="fe73f80b-95f2-4576-856a-2e48554be7cd">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="counter" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"count" : "1"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="81b2c258-c39c-486c-a93e-657157649f27" message="CorrelationId- #[vars.orginalPayload] -- correlationId -#[payload] -- correlationId-- #[vars.counter]"/>
+		<set-payload value="Hello viswa" doc:name="helloworld" doc:id="b76fcfbe-0125-4712-9565-91924cbe8fab" />
+		<flow-ref doc:name="helloworld-viswanathSub_Flow" doc:id="8713fc8b-b5b0-4881-827c-a100506fd5aa" name="helloworld-viswanathSub_Flow"/>
+		<flow-ref doc:name="helloworld-viswanath-privateFlow" doc:id="2a8a9e9b-5c75-4737-a030-623080058abc" name="helloworld-viswanath-privateFlow"/>
+		<logger level="INFO" doc:name="Display payload" doc:id="85dfea04-8849-4e0d-8f62-d1ddab946e1d" message="correlationid - #[vars.CorrelationId] - #[payload]"/>
+	</flow>
+	<sub-flow name="helloworld-viswanathSub_Flow" doc:id="4e74266b-bfb3-48c3-bac7-bb4df939647f" >
+		<logger level="INFO" doc:name="Subflow Logger" doc:id="ceb897de-7887-4ba8-84d6-d01cb8dafc05" message="CorrelationId- #[vars.CorrelationId] Subflow logger"/>
+	</sub-flow>
+	<flow name="helloworld-viswanath-privateFlow" doc:id="eed332f5-b686-4c93-af7a-ea303fb2869a" >
+		<logger level="INFO" doc:name="Private flow logger" doc:id="70d36c54-9ba2-4060-8933-5c61475dd7a7" message="CorrelationId- #[vars.CorrelationId] Private flow logger"/>
+	</flow>
+</mule>
