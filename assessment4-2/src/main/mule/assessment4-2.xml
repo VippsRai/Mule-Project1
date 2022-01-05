@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="71c5d9b9-d9ab-496f-8b3a-a6ebc3732de7" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment4-2Flow" doc:id="4ba85812-b153-4f29-9052-012de9be3973" >
+		<http:listener doc:name="Listener" doc:id="f676549a-234d-485a-b0a2-ea8b47d46339" config-ref="HTTP_Listener_config" path="/subflow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="b8d65006-c622-4dd3-87f2-7fe58e877de9" name="assessment4-2Sub_Flow" targetValue='#["error handle first flow"]'/>
+		<set-payload value='#["error handle for after flow"]' doc:name="Set Payload" doc:id="ada315d2-7b5c-4a6d-9316-46117f48d505" />
+	</flow>
+	<sub-flow name="assessment4-2Sub_Flow" doc:id="0927071a-c340-44e5-93c8-b774a56a8871" >
+		<http:request method="GET" doc:name="Request" doc:id="47088066-8871-4bae-8d46-8ef1752a841b" url="dfc.com"/>
+		<set-payload value='#["after request handle"]' doc:name="Set Payload" doc:id="9cfcdb99-6940-4ad2-855f-5166aa21b571" />
+	</sub-flow>
+</mule>
