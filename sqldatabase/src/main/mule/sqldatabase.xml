@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fb6cfb9a-8c25-4f3f-90d3-03e96c47a6ef" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="a5cb4b6a-c385-40d8-bfdf-a21e13ab2fdf" >
+		<db:mssql-connection host="${sqldb.host}" port="${sqldb.port}" user="${sqldb.user}" password="${sqldb.password}" databaseName="${sqldb.dbName}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="a9198c41-f9ce-4f4c-8a45-fa24f91dc356" file="properties\dev.yaml" />
+	<flow name="sqldatabaseFlow" doc:id="69f151e7-815a-4bd3-9689-a10a54944a82" >
+		<http:listener doc:name="Listener" doc:id="ca37ce37-37f2-4d20-928c-92b157ba62fb" config-ref="HTTP_Listener_config" path="/database1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e614c774-a69c-43c2-8d16-bd54ab8c6b2b" message="Starting Flow- #[flow.name] - #[payload]"/>
+		<db:insert doc:name="Insert" doc:id="c5480c9a-52a9-4171-be3e-816bf7bd9247" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into production.categories(category_name) values ('Viswanath')]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="dc3e39ac-1a0a-4ffa-a966-c4d1466c2e64" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sqldatabaseFlow1" doc:id="577d002b-1aad-4bf7-bbb9-82be52ce1ca6" >
+		<db:listener table="production.categories" doc:name="On Table Row" doc:id="7d4c7046-6de4-4a50-bd4e-1b10de9cb050" config-ref="Database_Config" watermarkColumn="category_id">
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="SECONDS" />
+			</scheduling-strategy>
+		</db:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="2c32895d-988a-4e7a-a1d0-d3df83dd5bb0" message="#[payload]"/>
+	</flow>
+</mule>
