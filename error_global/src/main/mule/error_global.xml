@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2be16afa-0862-4230-ac16-75bd6ad70d01" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="8bce201b-5f87-41f5-a105-b1762a6881e8" file="error_global.xml" />
+	<flow name="error_globalFlow" doc:id="07887b79-539f-455b-95a2-e7df363daec4" >
+		<http:listener doc:name="Listener" doc:id="c2d58e7d-7280-4cb9-ade6-6e12ec44357d" config-ref="HTTP_Listener_config" path="/global"/>
+		<set-payload value="#[500000]" doc:name="Set Payload" doc:id="5edb7bd3-4551-4689-9556-a9882b57b585" />
+		<validation:is-number numberType="INTEGER" doc:id="beca8c01-2dbe-4b78-929c-a691c9638cd7" value="#[payload]" minValue="1000" maxValue="5000"/>
+		<ee:transform doc:name="Transform Message" doc:id="166ceb25-94a4-4e20-b147-0ecdc92bd8d2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
