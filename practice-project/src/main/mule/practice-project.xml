@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="75c1e31f-2bf4-4f61-82c0-43f05f1c6b51" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c8aaa801-53b5-4873-b2fe-fe5f360e8de5" >
+		<http:request-connection host="addition-papi.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="practice-projectFlow" doc:id="802c5e3f-be99-47c0-aa0e-f035d398ae16" >
+		<http:listener doc:name="Listener" doc:id="c3f86ad9-913a-466a-a6a3-99079b1b9b22" config-ref="HTTP_Listener_config" path="/practice"/>
+		<set-variable value="#[uuid()]" doc:name="CorrelationId" doc:id="b28134f7-2464-4c17-a648-2af9d01cde83" variableName="CorrelationId"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b2acb804-63c8-46e6-afb0-b665ef0309f0" message="CorrelationId- #[vars.CorrelationId]"/>
+		<http:request method="POST" doc:name="Request" doc:id="d4ce2c59-ce22-431a-be4a-ceb10f061b36" config-ref="HTTP_Request_configuration" path="/add"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e4f00f9b-ccad-4aa3-9bf7-6590dcb4d0ba" message="CorrelationId- #[vars.CorrelationId]"/>
+	</flow>
+</mule>
