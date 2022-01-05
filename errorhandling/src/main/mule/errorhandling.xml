@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a5c4ff30-912c-4340-ac1e-e7b96afc224d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="errorhandlingFlow" doc:id="f26e92ef-f732-4700-a8e0-66d012e876e4" >
+		<http:listener doc:name="Listener" doc:id="0f005a31-e647-4e70-8365-862c8e71894f" config-ref="HTTP_Listener_config" path="/error">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["this is viswa"]' doc:name="Set Payload" doc:id="02f3ee87-2642-4300-94f9-fffe25ba2e5d" />
+		<http:request method="GET" doc:name="Request" doc:id="65214b5b-b154-4f9f-9fea-38f620923412" url="accche.com"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ec311351-0669-44f9-9cbf-707b52dd8eb2" type="HTTP:CONNECTIVITY">
+				<set-payload value='#["hi viswa"]' doc:name="Set Payload" doc:id="6ffe0f73-9bb5-47fd-956d-cb5ec8f3b9f4" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
