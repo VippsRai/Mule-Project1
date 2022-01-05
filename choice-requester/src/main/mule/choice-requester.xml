@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="eaafc9e1-0da7-488d-b0ee-45da3fb90de0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="8c6e0e07-5754-41dd-ba9b-3a3a6b27ca20" >
+		<http:request-connection host="choice-router.us-e2.cloudhub.io" />
+	</http:request-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="46aeb4df-667c-40f7-aabe-ac02dc5b4ede" >
+		<wsc:connection wsdlLocation="http://dneonline.com/calculator.asmx?wsdl" service="Calculator" port="CalculatorSoap12" address="http://dneonline.com/calculator.asmx" />
+	</wsc:config>
+	<wsc:config name="Web_Service_Consumer_Config1" doc:name="Web Service Consumer Config" doc:id="9d991316-a310-4583-98f9-5aa81ab686d1" >
+		<wsc:connection wsdlLocation="http://dneonline.com/calculator.asmx?wsdl" service="Calculator" port="CalculatorSoap12" address="http://dneonline.com/calculator.asmx" />
+	</wsc:config>
+	<flow name="choice-requesterFlow" doc:id="c5880590-f874-4f86-aa87-59914b905381" >
+		<http:listener doc:name="Listener" doc:id="1208ce40-bc44-4633-bc46-6e437383abb1" config-ref="HTTP_Listener_config" path="/choicerequest1"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="9f848ac9-dd2c-4edb-bc16-84018366c316" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="Logger" doc:id="36ec4c70-4541-4fed-b672-f98ba6720a14" message="Correlationid- #[vars.Correlationid]" />
+		<http:request method="POST" doc:name="Request" doc:id="8dbbdee2-0cc9-46c9-a326-ff677c72fbdb" config-ref="HTTP_Request_configuration" path="/choicerouter"/>
+		<logger level="INFO" doc:name="Logger" doc:id="554db884-c4b7-4543-9d91-3dd15f9cebcb" message="CorrelationId- #[vars.CorrelationId] " />
+	</flow>
+</mule>
