@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="04196b94-75fb-4207-a74c-846c5abbff74" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment1-viswanathFlow" doc:id="786e2fa7-884d-4481-95c4-a2b0df04f37f" >
+		<http:listener doc:name="Listener" doc:id="b0218af7-9024-4f44-b625-65b68581dcfb" config-ref="HTTP_Listener_config" path="/assessment"/>
+		<set-variable value="#[uuid()]" doc:name="Correlationid" doc:id="f33210d1-1c5a-45e8-a0ba-847771872504" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="CorrelationId" doc:id="06334750-9ff7-47b4-9be5-9719a5d8da8f" message="CorrelationId- #[vars.Correlationid]"/>
+		<ee:transform doc:name="Transform Message" doc:id="202c09a8-e546-46e7-9cfa-54720f508e8b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+value : payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="counter" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"count" : "1"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1b79cd11-05d5-4e20-b6c8-cbf1f3b37c9b" message="Correlationid payload to xml-#[payload]"/>
+	</flow>
+</mule>
