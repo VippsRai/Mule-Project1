@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="20142a6a-da69-43fc-981d-bc021a8bb610" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment4-1Flow" doc:id="c1d2e198-6145-448d-ad1e-9744eb2a5e45" >
+		<http:listener doc:name="Listener" doc:id="f0de0e08-db1a-4d33-bd6a-6f761e8b8feb" config-ref="HTTP_Listener_config" path="/global"/>
+		<choice doc:name="Choice" doc:id="15d40bd4-21cb-4be2-9bbb-07d1bedb5cde" >
+			<when expression="#[isEmpty(payload)]">
+				<raise-error doc:name="Raise error" doc:id="1ef67fdc-aaaa-4b0f-9785-0471beb7a0db" type="NO:PAYLOAD" description="no payload was received"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="108068b3-a56f-4d81-bf7d-6cb690f77056" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Response":"Hellow viswa"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ca780017-285b-4adc-9fe5-a13c02d83977" type="NO:PAYLOAD">
+				<ee:transform doc:name="Transform Message" doc:id="16dcd4cc-9d6e-44a8-a29c-f67e7540644f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"error was handle inside propagate"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
