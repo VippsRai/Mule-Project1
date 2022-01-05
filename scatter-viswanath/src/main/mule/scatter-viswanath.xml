@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6824ba29-6a6b-4b13-a150-5523f9b233d2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="writefile" doc:name="File Config" doc:id="a09601de-f347-45ea-ae2c-3d787e536ed9" >
+		<file:connection workingDir="C:\Users\viswanathr\Documents\write scatter" />
+	</file:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="11e99a19-3350-4421-bb6e-5eb7c07ae505" >
+		<db:mssql-connection host="muletraining.database.windows.net" port="1433" user="user" password="muletraining@123" databaseName="BikeStores" />
+	</db:config>
+	<flow name="scatter-viswanathFlow" doc:id="c9a32121-02e1-4790-b9a1-3b4fa0dc351d" >
+		<http:listener doc:name="Listener" doc:id="066b310c-6708-4183-aec5-79eb184d3d63" config-ref="HTTP_Listener_config" path="/scatter1"/>
+		<set-payload value="#['4']" doc:name="Set Payload" doc:id="de4c4f8f-df5f-426a-ae0f-26b731fa8d47" />
+		<choice doc:name="Choice" doc:id="55c37822-27b9-4f5c-9c47-106513c3ca14" >
+			<when expression="if number is greater than 7">
+				<scatter-gather doc:name="Scatter-Gather" doc:id="ae58c4a7-981a-4b58-a4f2-c41b1c67cd05" >
+					<route >
+						<file:write doc:name="Write" doc:id="a37248fe-3a93-4ff6-b849-3c05faffa916" config-ref="writefile" path="writefile.txt" mode="CREATE_NEW"/>
+					</route>
+					<route >
+						<set-payload value="number is grater than 7" doc:name="Set Payload" doc:id="3db6b736-5255-47c5-a40e-b7b7a315cf15" />
+					</route>
+					<route >
+						<db:insert doc:name="Insert" doc:id="acca1f8f-50e9-499c-844e-d61573ac20be" config-ref="Database_Config">
+							<db:sql ><![CDATA[insert into production.categories(category_name) values ('Viswanath')]]></db:sql>
+						</db:insert>
+					</route>
+				</scatter-gather>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="f3e7e6b5-f6da-4950-9abe-29a3aad92bb7" message="number is less than 7"/>
+			</otherwise>
+		</choice>
+		<set-payload value="#[payload]" doc:name="aggregator" doc:id="bcf333a4-d3f8-4ab3-a0d4-a5954c9c66eb" />
+	</flow>
+</mule>
