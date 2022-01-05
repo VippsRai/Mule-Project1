@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="aecaa17f-d6af-411f-b77a-37830b487496" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scattergather-viswanathFlow" doc:id="f8abd365-c571-4649-b43d-0b1584b3cb16" >
+		<http:listener doc:name="Listener" doc:id="1d4aa084-4936-49c1-ae29-440013c6040d" config-ref="HTTP_Listener_config" path="/scatter"/>
+		<set-payload value="#['Viswa']" doc:name="originalpayload" doc:id="943958d3-2cbe-4b0d-ad0c-e1b9d457cd07" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="badfd41b-2cff-406a-834b-6ca2a8a39a73" >
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot;++ 'route1']" doc:name="route1" doc:id="4559b090-d613-474d-8451-505c213e0bd8" variableName="route1"/>
+				<set-payload value="#[payload ++ &quot; &quot;++ 'route1']" doc:name="Set Payload r1" doc:id="dc3ae9f1-a497-4412-adc4-5b348485e5bf" />
+			</route>
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot;++ 'route2']" doc:name="route2" doc:id="27f9dea7-8d82-4506-846c-55f5747170f4" variableName="route2"/>
+				<set-payload value="#[payload ++ &quot; &quot;++ 'route2']" doc:name="Set Payload r2" doc:id="e62ee37b-d68b-4414-9b71-54d1adeeb2a2" />
+			</route>
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot;++ 'route3']" doc:name="route3" doc:id="51820f96-00c1-42d2-b350-bcbb22a0cb41" variableName="route3"/>
+				<set-payload value="#[payload ++ &quot; &quot;++ 'route3']" doc:name="Set Payload r3" doc:id="ad0e53ba-9c25-4917-8aa8-548af46ebf82" />
+			</route>
+		</scatter-gather>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="aggregator" doc:id="a2c198ff-f555-46dd-9d0c-48141970512c" />
+	</flow>
+</mule>
