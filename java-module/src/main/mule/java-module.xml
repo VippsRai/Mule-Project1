@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="06759d0f-40e3-4a33-954a-f53c9199e7a6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="java-moduleFlow" doc:id="830eaf3d-a7cd-43be-9033-8fa83f51516e" >
+		<http:listener doc:name="Listener" doc:id="e6d24be1-ce44-4d98-9e8b-273b9dae76d2" config-ref="HTTP_Listener_config" path="/javamodule"/>
+		<java:new constructor="samplejavamodule()" doc:name="New" doc:id="83005cdb-68c3-4c16-8116-0c67f6e7e80d" class="com.porj.samplejavamodule" target="objOfSampleClass"/>
+		<java:invoke doc:name="Invoke" doc:id="e739951c-26b6-41f4-afb0-7cbb5200366e" instance="#[vars.objofSampleClass]" class="com.porj.samplejavamodule" method="getBalance(java.lang.String)" target="objofSampleClass">
+			<java:args ><![CDATA[#[{
+	arg0: attributes.queryParams.bankName
+}]]]></java:args>
+		</java:invoke>
+	</flow>
+	<flow name="java-moduleFlow1" doc:id="b86292dc-c022-4f07-a1c8-21b852ef9f77" >
+		<http:listener doc:name="Listener" doc:id="80b4996d-ba31-41a7-809e-a0a778e7bd30" config-ref="HTTP_Listener_config" path="/javamodule"/>
+		<java:invoke-static method="welcome(java.lang.String)" doc:name="Invoke static" doc:id="28b77e10-1902-4eb5-8f1e-d71efc2e84cc" class="com.porj.samplejavamodule">
+			<java:args ><![CDATA[#[{
+	 arg0: attributes.queryParams.name
+	 
+}]]]></java:args>
+		</java:invoke-static>
+	</flow>
+</mule>
