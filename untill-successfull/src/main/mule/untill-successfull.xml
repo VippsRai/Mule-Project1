@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="17af77f7-97a3-4150-9bd4-9c8b5763c574" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d3280d8c-d6cf-4541-80a8-ac5ae58ee137" >
+		<http:request-connection host="assesment-2-viswa.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="untill-successfullFlow" doc:id="5b7d9af2-1de3-4059-bf23-565320d09204" >
+		<http:listener doc:name="Listener" doc:id="91be756a-067d-4c57-8c49-4b72aeafdc38" config-ref="HTTP_Listener_config" path="/untillsuccessfull"/>
+		<ee:transform doc:name="Transform Message" doc:id="b2197888-be85-43b3-8667-2fd899080e6a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Name" : "viswa",
+	"size" : "M"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="eb0b806c-1d15-4156-ba25-141502c8b194" millisBetweenRetries="10000">
+			<http:request method="POST" doc:name="Request" doc:id="4e00f31a-7215-4825-8649-4509cb5b4579" config-ref="HTTP_Request_configuration" path="/viswa2" />
+		</until-successful>
+		<logger level="INFO" doc:name="Logger" doc:id="4e980237-d55c-4b91-992f-f9d756a6f107" message="end log"/>
+	</flow>
+</mule>
