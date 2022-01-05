@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b458ffe1-8935-4cca-9644-3149417105c5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assesment-2-viswaFlow" doc:id="e42bbcd3-7c6d-4e70-bc16-579d65f20ccc" >
+		<http:listener doc:name="Listener" doc:id="c270752a-f843-4f60-8ea9-05f3ff501e6e" config-ref="HTTP_Listener_config" path="/viswa"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="b554e352-2f63-4a27-9287-7c9fadf9d1a5" variableName="CorrelationId"/>
+		<choice doc:name="Choice" doc:id="ad38f6f3-2f2b-415d-b8f3-8b39c5d79a2f" >
+			<when expression="((attributes.queryParams.productid&gt;= 10001 as Number) and (attributes.queryParams.productid&lt;99999 as Number))">
+				<java:new doc:name="New" doc:id="656bc097-2464-4124-818b-225828e12889" class="proviswa.sales" constructor="sales()" target="Static"/>
+				<java:invoke method="getproductid(int)" doc:name="Invoke" doc:id="d5cb76f8-9036-425d-bddd-6deafa6162b1" instance="#[vars.Static]" class="proviswa.sales">
+					<java:args ><![CDATA[#[{
+	arg0: attributes.queryParams.productid
+}]]]></java:args>
+				</java:invoke>
+				<set-payload value="Valid ID" doc:name="Set Payload" doc:id="53d9d243-358e-4aea-92c7-9de0c00862cc" />
+			</when>
+			<otherwise >
+				<set-payload value="invalid ID" doc:name="Set Payload" doc:id="7a739ca3-40e0-41a7-a820-18e138b7caa1" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="assesment-2-viswaFlow1" doc:id="c49e6ba7-4fe4-4cce-93a2-686c18dfe7ab" >
+		<http:listener doc:name="Listener" doc:id="39a9c86f-d6df-44a4-80f6-3fca0f821809" config-ref="HTTP_Listener_config" path="/viswa2"/>
+		<java:new constructor="sales()" doc:name="New" doc:id="b851113b-0f08-4f62-9e31-b71da04cf3c8" class="proviswa.sales" target="Static2"/>
+		<java:invoke method="getamount(java.lang.String)" doc:name="Invoke" doc:id="f203ed93-d488-4e6f-bf0f-4a6e9f5b38d1" instance="#[vars.Static2]" class="proviswa.sales">
+			<java:args ><![CDATA[#[{
+	arg0 : payload.size as String
+}]]]></java:args>
+		</java:invoke>
+		<ee:transform doc:name="Transform Message" doc:id="0ddd4a53-5f67-4524-b7cc-2e3fb5733394" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"total amount": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
