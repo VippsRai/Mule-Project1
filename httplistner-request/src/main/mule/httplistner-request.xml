@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e29f60a8-a6f4-4a63-9074-064333d432c1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c108f1ff-ed93-4530-93d5-2b2a581e2518" >
+		<http:request-connection host="assessment1-viswanath.us-e2.cloudhub.io"/>
+	</http:request-config>
+	<flow name="httplistner-requestFlow" doc:id="3b6b5f2f-22b6-4b78-ad3a-45ebc5432139" >
+		<http:listener doc:name="Listener" doc:id="bb032d9b-71f9-40dd-b061-2e66dd35b096" config-ref="HTTP_Listener_config" path="/requester"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="1c282ec4-14c5-4a3d-b693-b37cef5ae322" variableName="CorrelationId"/>
+		<logger level="INFO" doc:name="CorrelationId" doc:id="1997126b-3c1c-41c1-921b-130f483ff345" message="CorrelationId- #[vars.CorrelationId]"/>
+		<ee:transform doc:name="Transform Message" doc:id="bad0ba17-45dd-4d5f-80b4-fe894ee64d79" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Employeeid" : 2045,
+	"Employeename" : "Viswanath",
+	"Employeesalary" : 200000
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6eaa8510-5529-4a58-bf5d-9b1b1b4fffda" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="a8f4d436-bca0-46e8-8133-cc12fac7d1ff" config-ref="HTTP_Request_configuration" path="/assessment" outputMimeType="application/json" target="response">
+			<ee:repeatable-file-store-stream bufferUnit="MB" />
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="7147bc98-4838-4efb-9ff3-1b883dccdd9f" message="CorrelationId- #[vars.CorrelationId] -response received -#[vars.response]"/>
+	</flow>
+</mule>
