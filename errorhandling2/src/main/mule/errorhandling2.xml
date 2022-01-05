@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3493546b-5366-4f78-b1e0-aec1a26413d0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="errorhandling2Flow" doc:id="4f1c01a4-9baa-453f-84c2-b7fdb677ba4e" >
+		<http:listener doc:name="Listener" doc:id="6539e9b6-8920-4443-8373-c37469d2adc6" config-ref="HTTP_Listener_config" path="/error2"/>
+		<flow-ref doc:name="Flow Reference" doc:id="9e8d0d81-cfa5-41f9-93db-60651b211771" name="onerror_continue_privateflow"/>
+		<set-payload value='#["after flow handle"]' doc:name="Set Payload" doc:id="b8e6471c-a7b5-41e9-8c79-b5b2a33dd7a0" />
+	</flow>
+	<flow name="onerror_continue_privateflow" doc:id="233e7bd1-875d-4845-89a8-48340c329b7b" >
+		<http:request method="GET" doc:name="Request" doc:id="da632f36-b66b-4fe3-b846-91e618316054" url="avd.com"/>
+		<set-payload value='#["after request handle"]' doc:name="Set Payload" doc:id="1c53b006-d65f-41b8-a2d4-f36545888620" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="58e4c708-00e1-4e39-9369-41cdeaa445d6" type="HTTP:CONNECTIVITY">
+				<set-payload value='#["hellow viswa"]' doc:name="Set Payload" doc:id="f3789e3b-7fe5-47c8-b82a-c6d3812e399a" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
