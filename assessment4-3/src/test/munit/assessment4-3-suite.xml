@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="assessment4-3-suite.xml" />
+	<munit:test name="assessment4-3Flow-success" doc:id="9c9a0c84-b810-4d33-828d-4f016b5bd044" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="3ebde236-6b00-44ab-b2e2-3ee5083dcb5f" >
+				<munit:payload value="#[readUrl('classpath://assessment43Flowsuccess\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://assessment43Flowsuccess\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to assessment4-3Flow" doc:id="d5c5f731-33dd-4e29-b250-29524784444a" name="assessment4-3Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="f8f215e2-63c0-455c-84b0-fde5ccc853d0" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import assessment43Flowsuccess::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="assessment4-3Flow1-success" doc:id="e920fa73-ed10-4ab8-ad68-92b36b6514f4" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="934285a3-d966-42d1-9ce2-d9b13f9fd562" >
+				<munit:payload value="#[readUrl('classpath://assessment43Flow1success\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://assessment43Flow1success\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to assessment4-3Flow1" doc:id="67cf0250-873e-4975-8744-e766c954e6f7" name="assessment4-3Flow1"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="fc4e64ec-bafa-40db-a3af-877b34babc9e" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import assessment43Flow1success::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
