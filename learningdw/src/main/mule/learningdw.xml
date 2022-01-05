@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4073c533-1d6b-46ac-a18f-c9eefdebc278" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="learningdwFlow" doc:id="21923a74-fdbf-4561-9b8e-6bdfb9b661c8" >
+		<http:listener doc:name="Listener" doc:id="a4925983-b70d-4ba9-ac52-ff0bb34b7ad0" config-ref="HTTP_Listener_config" path="/learningdw"/>
+		<http:request method="GET" doc:name="Request" doc:id="c2dbd588-40e2-482c-9312-494409acfb48" url="https://api.openweathermap.org/data/2.5/weather?q=Hyderabad&amp;appid=8c78dd6124cc8157d5b96b2633a22989"/>
+		<ee:transform doc:name="Transform Message" doc:id="9095b01c-4704-4764-a818-342509685350" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output json
+---
+["max temp":payload.main.temp_max,
+ "min temp":payload.main.temp_min
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
